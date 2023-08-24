@@ -20,15 +20,16 @@ with import <nixpkgs> {};
   # environment.
   nixpkgs.config.allowUnfree = true;
   home.packages = [
-    pkgs.git
-    pkgs.spice
-    pkgs.spice-vdagent
-    pkgs.phodav
     pkgs._1password
     pkgs._1password-gui
-    pkgs.nyxt
-    pkgs.autojump
     pkgs.arandr
+    pkgs.autojump
+    pkgs.git
+    pkgs.nerdfonts
+    pkgs.nyxt
+    pkgs.phodav
+    pkgs.spice
+    pkgs.spice-vdagent
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -66,6 +67,21 @@ with import <nixpkgs> {};
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
   programs.alacritty.enable = true;
+  programs.alacritty.settings = {
+    live_config_reload = true;
+    import = [ ./nightfox.yaml];
+    window = {
+      dynamic_padding = true;
+      decorations = "none";
+    };
+    font = {
+      normal.family = "FiraCode Nerd Font Mono";
+      normal.style = "Regular";
+      bold.style = "Bold";
+      italic.style = "Light Italic";
+      bold_italic.style = "Bold Italic";
+    };
+  };
   programs.firefox.enable = true;
   programs.zsh.enable = true;
   programs.zsh.shellAliases = {
@@ -103,6 +119,7 @@ with import <nixpkgs> {};
     lualine-nvim
     neoformat
     neoyank-vim
+    nightfox-nvim
     nvim-tree-lua
     nvim-web-devicons
     plenary-nvim
@@ -112,6 +129,7 @@ with import <nixpkgs> {};
     toggleterm-nvim
     unicode-vim
     vim-abolish
+    vim-devicons
     vim-eunuch
     vim-exchange
     vim-fugitive

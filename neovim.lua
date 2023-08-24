@@ -3,7 +3,10 @@ vim.g.loaded = 1
 vim.g.loaded_netrwPlugin = 1
 vim.g.mapleader = ' '
 
-require'nvim-web-devicons'.setup{}
+vim.cmd("colorscheme nightfox")
+
+require('nvim-web-devicons').setup{}
+require('lualine').setup{}
 require("nvim-tree").setup({
   update_cwd = false,
   prefer_startup_root = true,
