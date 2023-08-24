@@ -28,6 +28,7 @@ with import <nixpkgs> {};
     pkgs._1password-gui
     pkgs.nyxt
     pkgs.autojump
+    pkgs.arandr
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -86,17 +87,29 @@ with import <nixpkgs> {};
   programs.neovim.vimAlias = true;
   programs.neovim.plugins = with pkgs.vimPlugins; [
     ale
+    bufferline-nvim
+    comment-nvim
+    copilot-lua
+    dashboard-nvim
     dhall-vim
     editorconfig-vim
     fzf-vim
+    git-blame-nvim
     gitsigns-nvim
     haskell-vim
+    hop-nvim
+    lazygit-nvim
+    lightspeed-nvim
+    lualine-nvim
     neoformat
     neoyank-vim
+    nvim-tree-lua
+    nvim-web-devicons
     plenary-nvim
     quickfix-reflector-vim
     tabular
     telescope-nvim
+    toggleterm-nvim
     unicode-vim
     vim-abolish
     vim-eunuch
@@ -112,28 +125,31 @@ with import <nixpkgs> {};
     vim-scriptease
     vim-sensible
     vim-speeddating
-    dashboard-nvim
     vim-surround
     vim-textobj-user
     vim-unimpaired
     vim-vinegar
+    vim-visual-star-search
+    which-key-nvim
   ];
+  programs.neovim.extraLuaConfig = builtins.readFile ./neovim.lua;
   xsession.enable = true;
   xsession.windowManager.i3 = {
      enable = true;
-     package = pkgs.i3-gaps;
-     config = rec {
-     keybindings = lib.mkOptionDefault {
-          "${config.xsession.windowManager.i3.config.modifier}+h" = "focus left";
-          "${config.xsession.windowManager.i3.config.modifier}+j" = "focus down";
-          "${config.xsession.windowManager.i3.config.modifier}+k" = "focus up";
-          "${config.xsession.windowManager.i3.config.modifier}+l" = "focus right";
-          "${config.xsession.windowManager.i3.config.modifier}+Shift+h" = "move left";
-          "${config.xsession.windowManager.i3.config.modifier}+Shift+j" = "move down";
-          "${config.xsession.windowManager.i3.config.modifier}+Shift+k" = "move up";
-          "${config.xsession.windowManager.i3.config.modifier}+Shift+l" = "move right";
-          "${config.xsession.windowManager.i3.config.modifier}+w" = "split h";
-    };
-    };
+      package = pkgs.i3-gaps;
+      config = rec {
+      keybindings = lib.mkOptionDefault {
+           "${config.xsession.windowManager.i3.config.modifier}+h" = "focus left";
+           "${config.xsession.windowManager.i3.config.modifier}+j" = "focus down";
+           "${config.xsession.windowManager.i3.config.modifier}+k" = "focus up";
+           "${config.xsession.windowManager.i3.config.modifier}+l" = "focus right";
+           "${config.xsession.windowManager.i3.config.modifier}+Shift+h" = "move left";
+           "${config.xsession.windowManager.i3.config.modifier}+Shift+j" = "move down";
+           "${config.xsession.windowManager.i3.config.modifier}+Shift+k" = "move up";
+           "${config.xsession.windowManager.i3.config.modifier}+Shift+l" = "move right";
+           "${config.xsession.windowManager.i3.config.modifier}+w" = "split h";
+         };
+        terminal = "alacritty";
+   };
   };
 }
