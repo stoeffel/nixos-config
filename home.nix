@@ -25,6 +25,7 @@ with import <nixpkgs> {};
     pkgs.arandr
     pkgs.autojump
     pkgs.git
+    pkgs.gh
     pkgs.nerdfonts
     pkgs.nyxt
     pkgs.phodav
