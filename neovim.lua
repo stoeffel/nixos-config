@@ -7,6 +7,7 @@ vim.cmd("colorscheme nightfox")
 
 require('nvim-web-devicons').setup{}
 require('lualine').setup{}
+require('copilot').setup{}
 require("nvim-tree").setup({
   update_cwd = false,
   prefer_startup_root = true,

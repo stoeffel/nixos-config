@@ -24,9 +24,11 @@ with import <nixpkgs> {};
     pkgs._1password-gui
     pkgs.arandr
     pkgs.autojump
+    pkgs.copilot-cli
     pkgs.git
     pkgs.gh
     pkgs.nerdfonts
+    pkgs.nodejs
     pkgs.nyxt
     pkgs.phodav
     pkgs.spice
