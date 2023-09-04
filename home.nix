@@ -1,5 +1,5 @@
 { config, pkgs, ... }:
-with import <nixpkgs> {};
+with import <nixpkgs> { };
 
 {
   # Home Manager needs a bit of information about you and the paths it should
@@ -27,12 +27,18 @@ with import <nixpkgs> {};
     pkgs.copilot-cli
     pkgs.git
     pkgs.gh
+    pkgs.killall
+    pkgs.lxappearance
     pkgs.nerdfonts
+    pkgs.nixfmt
     pkgs.nodejs
     pkgs.nyxt
     pkgs.phodav
-    pkgs.spice
-    pkgs.spice-vdagent
+    pkgs.xclip
+    pkgs.wget
+    pkgs.ripgrep
+    pkgs.python3
+    pkgs.zerotierone
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -62,39 +68,36 @@ with import <nixpkgs> {};
   # if you don't want to manage your shell through Home Manager.
   home.sessionVariables = {
     EDITOR = "nvim";
-    TERM = "alacritty";
+    TERM = "kitty";
     SHELL = "zsh";
 
   };
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
-  programs.alacritty.enable = true;
-  programs.alacritty.settings = {
-    live_config_reload = true;
-    import = [ ./nightfox.yaml];
-    window = {
-      dynamic_padding = true;
-      decorations = "none";
-    };
-    font = {
-      normal.family = "FiraCode Nerd Font Mono";
-      normal.style = "Regular";
-      bold.style = "Bold";
-      italic.style = "Light Italic";
-      bold_italic.style = "Bold Italic";
-    };
-  };
-  programs.firefox.enable = true;
+
   programs.zsh.enable = true;
   programs.zsh.shellAliases = {
     g = "git";
     v = "nvim";
   };
   programs.zsh.oh-my-zsh.enable = true;
-  programs.zsh.oh-my-zsh.plugins = [
-    "git" "pip" "autojump" "command-not-found" "fasd" "history" "fzf" ];
+  programs.zsh.oh-my-zsh.plugins =
+    [ "git" "pip" "autojump" "command-not-found" "fasd" "history" "fzf" ];
 
+  programs.kitty = {
+    enable = true;
+    theme = "Nightfox";
+    font = {
+      name = "FiraCode Nerd Font Mono";
+      size = 22;
+    };
+    settings = { shell = "zsh"; 
+    hide_window_decorations = "yes";
+  };
+  };
+  programs.firefox.enable = true;
+  programs.chromium.enable = true;
   programs.fzf.enable = true;
   programs.starship.enable = true;
   programs.git.enable = true;
@@ -154,23 +157,54 @@ with import <nixpkgs> {};
     which-key-nvim
   ];
   programs.neovim.extraLuaConfig = builtins.readFile ./neovim.lua;
-  xsession.enable = true;
-  xsession.windowManager.i3 = {
-     enable = true;
-      package = pkgs.i3-gaps;
-      config = rec {
-      keybindings = lib.mkOptionDefault {
-           "${config.xsession.windowManager.i3.config.modifier}+h" = "focus left";
-           "${config.xsession.windowManager.i3.config.modifier}+j" = "focus down";
-           "${config.xsession.windowManager.i3.config.modifier}+k" = "focus up";
-           "${config.xsession.windowManager.i3.config.modifier}+l" = "focus right";
-           "${config.xsession.windowManager.i3.config.modifier}+Shift+h" = "move left";
-           "${config.xsession.windowManager.i3.config.modifier}+Shift+j" = "move down";
-           "${config.xsession.windowManager.i3.config.modifier}+Shift+k" = "move up";
-           "${config.xsession.windowManager.i3.config.modifier}+Shift+l" = "move right";
-           "${config.xsession.windowManager.i3.config.modifier}+w" = "split h";
-         };
-        terminal = "alacritty";
-   };
+  programs.i3status-rust.enable = true;
+  programs.i3status-rust.bars = {
+    bottom = {
+      blocks = [
+        {
+          block = "time";
+          interval = 60;
+          format = " $timestamp.datetime(f:'%a %d/%m %R') ";
+        }
+      ];
+      theme = "plain";
+    };
   };
+  xsession.enable = true;
+  xsession.scriptPath = ".hm-xsession";
+  xsession.initExtra = ''
+    spice-vdagent
+  '';
+  xsession.windowManager.i3 = {
+    enable = true;
+    package = pkgs.i3-gaps;
+    config = rec {
+      defaultWorkspace = "workspace number 1";
+      gaps = { inner = 5; };
+      keybindings = lib.mkOptionDefault {
+        "${config.xsession.windowManager.i3.config.modifier}+h" = "focus left";
+        "${config.xsession.windowManager.i3.config.modifier}+j" = "focus down";
+        "${config.xsession.windowManager.i3.config.modifier}+k" = "focus up";
+        "${config.xsession.windowManager.i3.config.modifier}+l" = "focus right";
+        "${config.xsession.windowManager.i3.config.modifier}+Shift+h" =
+          "move left";
+        "${config.xsession.windowManager.i3.config.modifier}+Shift+j" =
+          "move down";
+        "${config.xsession.windowManager.i3.config.modifier}+Shift+k" =
+          "move up";
+        "${config.xsession.windowManager.i3.config.modifier}+Shift+l" =
+          "move right";
+        "${config.xsession.windowManager.i3.config.modifier}+w" = "split h";
+      };
+      terminal = "kitty";
+      bars = [{
+        position = "bottom";
+        statusCommand = "${pkgs.i3status-rust}/bin/i3status-rs ~/.config/i3status-rust/config-bottom.toml";
+      }];
+    };
+  };
+  services.random-background.enable = true;
+  services.random-background.imageDirectory = "%h/backgrounds/";
+  services.random-background.enableXinerama = true;
+  services.random-background.interval = "1h";
 }

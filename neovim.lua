@@ -2,6 +2,7 @@
 vim.g.loaded = 1
 vim.g.loaded_netrwPlugin = 1
 vim.g.mapleader = ' '
+vim.opt.swapfile = false
 
 vim.cmd("colorscheme nightfox")
 
