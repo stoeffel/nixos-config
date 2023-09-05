@@ -5,6 +5,12 @@ vim.g.mapleader = ' '
 vim.opt.swapfile = false
 
 vim.cmd("colorscheme nightfox")
+vim.cmd [[
+augroup fmt
+  autocmd!
+  autocmd BufWritePre * undojoin | Neoformat
+augroup END
+]]
 
 require('nvim-web-devicons').setup{}
 require('lualine').setup{}
