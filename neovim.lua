@@ -4,17 +4,30 @@ vim.g.loaded_netrwPlugin = 1
 vim.g.mapleader = ' '
 vim.opt.swapfile = false
 
-vim.cmd("colorscheme nightfox")
 vim.cmd [[
+set number
+colorscheme nightfox
+set undodir=~/tmp/vim/undo
+if !isdirectory(expand(&undodir))
+   call mkdir(expand(&undodir), 'p')
+endif
+
 augroup fmt
   autocmd!
   autocmd BufWritePre * undojoin | Neoformat
 augroup END
 ]]
-
+require('gitsigns').setup()
 require('nvim-web-devicons').setup{}
 require('lualine').setup{}
-require('copilot').setup{}
+require('copilot').setup{
+	suggestion = {
+		auto_trigger = true,
+		keymap = {
+			accept = "<tab>",
+		},
+	}
+}
 require("nvim-tree").setup({
   update_cwd = false,
   prefer_startup_root = true,
@@ -32,11 +45,6 @@ require("nvim-tree").setup({
   },
   view = {
     adaptive_size = true,
-    mappings = {
-      list = {
-        { key = "u", action = "dir_up" },
-      },
-    },
   },
   renderer = {
     group_empty = true,

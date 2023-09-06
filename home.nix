@@ -42,6 +42,9 @@
     (pkgs.writeShellScriptBin "xrandr-auto" ''
       xrandr --output Virtual-1 --auto
     '')
+    (pkgs.writeShellScriptBin "xrandr-big-monitor" ''
+      xrandr --output Virtual-1 --mode 5120x216
+    '')
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
