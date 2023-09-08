@@ -19,13 +19,14 @@
   # environment.
   nixpkgs.config.allowUnfree = true;
   home.packages = [
-    # pkgs._1password
-    # pkgs._1password-gui
     pkgs.arandr
     pkgs.autojump
     pkgs.copilot-cli
-    pkgs.git
+    pkgs.elmPackages.elm-format
+    pkgs.elmPackages.elm-test
     pkgs.gh
+    pkgs.git
+    pkgs.gopass
     pkgs.killall
     pkgs.lxappearance
     pkgs.nerdfonts
@@ -33,17 +34,16 @@
     pkgs.nodejs
     pkgs.nyxt
     pkgs.phodav
-    pkgs.xclip
-    pkgs.wget
-    pkgs.ripgrep
     pkgs.python3
+    pkgs.ripgrep
     pkgs.spice-vdagent
-    # pkgs.zerotierone
+    pkgs.wget
+    pkgs.xclip
     (pkgs.writeShellScriptBin "xrandr-auto" ''
       xrandr --output Virtual-1 --auto
     '')
     (pkgs.writeShellScriptBin "xrandr-big-monitor" ''
-      xrandr --output Virtual-1 --mode 5120x216
+      xrandr --output Virtual-1 --mode 5120x2160
     '')
   ];
 
@@ -85,12 +85,18 @@
 
   programs.zsh.enable = true;
   programs.zsh.shellAliases = {
-    g = "git";
+    g = "lazygit";
     v = "nvim";
   };
   programs.zsh.oh-my-zsh.enable = true;
   programs.zsh.oh-my-zsh.plugins =
     [ "git" "pip" "autojump" "command-not-found" "fasd" "history" "fzf" ];
+
+  programs.tmux.enable = true;
+  programs.tmux.tmuxinator.enable = true;
+  programs.tmux.keyMode = "vi";
+  programs.tmux.sensibleOnTop = true;
+  programs.tmux.prefix = "C-b";
 
   programs.kitty = {
     enable = true;
@@ -214,4 +220,8 @@
   services.random-background.imageDirectory = "%h/backgrounds/";
   services.random-background.enableXinerama = true;
   services.random-background.interval = "1h";
+  home.activation.createGitignore = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    cp -f ${./gitignore} $HOME/.config/git/ignore
+  '';
+
 }
