@@ -26,7 +26,10 @@
     pkgs.elmPackages.elm-test
     pkgs.gh
     pkgs.git
+    pkgs.gnupg
+    pkgs.gnome.nautilus
     pkgs.gopass
+    pkgs.git-extras
     pkgs.killall
     pkgs.lxappearance
     pkgs.nerdfonts
