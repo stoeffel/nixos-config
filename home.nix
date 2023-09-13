@@ -26,10 +26,10 @@
     pkgs.elmPackages.elm-test
     pkgs.gh
     pkgs.git
-    pkgs.gnupg
-    pkgs.gnome.nautilus
-    pkgs.gopass
     pkgs.git-extras
+    pkgs.gnome.nautilus
+    pkgs.gnupg
+    pkgs.gopass
     pkgs.killall
     pkgs.lxappearance
     pkgs.nerdfonts
@@ -84,6 +84,7 @@
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
+  programs.chromium.enable = true;
   programs.ssh.enable = true;
 
   programs.zsh.enable = true;
@@ -103,7 +104,7 @@
 
   programs.kitty = {
     enable = true;
-    theme = "Nightfox";
+    theme = "Tokyo Night Day";
     font = {
       name = "FiraCode Nerd Font Mono";
       size = 22;
@@ -114,7 +115,6 @@
     };
   };
   programs.firefox.enable = true;
-  programs.chromium.enable = true;
   programs.fzf.enable = true;
   programs.starship.enable = true;
   programs.git.enable = true;
@@ -138,11 +138,14 @@
     haskell-vim
     hop-nvim
     lazygit-nvim
+    vim-bookmarks
+    telescope-vim-bookmarks-nvim
     lightspeed-nvim
     lualine-nvim
     neoformat
     neoyank-vim
     nightfox-nvim
+    tokyonight-nvim
     nvim-tree-lua
     nvim-web-devicons
     plenary-nvim
@@ -182,7 +185,7 @@
         interval = 60;
         format = " $timestamp.datetime(f:'%a %d/%m %R') ";
       }];
-      theme = "plain";
+      theme = "native";
     };
   };
   xsession.enable = true;

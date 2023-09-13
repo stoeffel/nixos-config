@@ -3,15 +3,19 @@ vim.g.loaded = 1
 vim.g.loaded_netrwPlugin = 1
 vim.g.mapleader = ' '
 vim.opt.swapfile = false
+vim.wo.number = true
+local undodir = '~/.config/nvim/undo'
+if vim.fn.isdirectory(undodir) == 0 then
+    vim.fn.mkdir(undodir, 'p')
+end
+vim.g.undodir = undodir
 
+vim.g.bookmark_sign = '🎗️'
+vim.g.bookmark_highlight_lines = true
+vim.g.bookmark_no_default_key_mappings = true
+
+vim.cmd('colorscheme tokyonight-day')
 vim.cmd [[
-set number
-colorscheme nightfox
-set undodir=~/tmp/vim/undo
-if !isdirectory(expand(&undodir))
-   call mkdir(expand(&undodir), 'p')
-endif
-
 augroup fmt
   autocmd!
   autocmd BufWritePre * Neoformat
@@ -60,7 +64,12 @@ require('gitsigns').setup{
   end
 }
 require('nvim-web-devicons').setup{}
-require('lualine').setup{}
+require('lualine').setup {
+  options = {
+    theme = 'tokyonight'
+  }
+}
+require("bufferline").setup{}
 require('copilot').setup{
 	suggestion = {
 		auto_trigger = true,
@@ -150,4 +159,19 @@ wk.register({
     t = { "<cmd>Telescope lsp_type_definitions<cr>",	"Goto the definition of the type of the word under the cursor, if there's only one, otherwise show all options in Telescope" },
     o = { "<cmd>AerialToggle!<CR>", "Display code outline" },
   },
+  b = {
+     name = "Bookmarks",
+     b = { "<cmd>Telescope vim_bookmarks all<cr>", "all bookmarks" },
+     c = { "<cmd>Telescope vim_bookmarks current_file<cr>", "current file" },
+
+     t = { "<cmd>BookmarkToggle<cr>", "toggle" },
+     a = { "<cmd>BookmarkAnnotate<cr>", "annotate" },
+     n = { "<cmd>BookmarkNext<cr>", "next" },
+     p = { "<cmd>BookmarkPrev<cr>", "prev" },
+     c = { "<cmd>BookmarkClear<cr>", "clear" },
+     x = { "<cmd>BookmarkClearAll<cr>", "clear all" },
+     k = { "<cmd>BookmarkMoveUp<cr>", "move up" },
+     j = { "<cmd>BookmarkMoveDown<cr>", "move down" },
+     l = { "<cmd>BookmarkMoveToLine<cr>", "move to line" },
+     },
 }, { prefix = "<leader>" })
