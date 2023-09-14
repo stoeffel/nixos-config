@@ -14,6 +14,19 @@ vim.g.bookmark_sign = '🎗️'
 vim.g.bookmark_highlight_lines = true
 vim.g.bookmark_no_default_key_mappings = true
 
+require'nvim-treesitter.configs'.setup {
+	highligh = {
+		enable = true,
+	},
+	indent = {
+		enable = true,
+	},
+	incremental_selection = {
+		enable = true,
+	},
+}
+local lspconfig = require('lspconfig')
+lspconfig.elmls.setup {}
 vim.cmd('colorscheme tokyonight-day')
 vim.cmd [[
 augroup fmt

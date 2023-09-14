@@ -22,7 +22,9 @@
     pkgs.arandr
     pkgs.autojump
     pkgs.copilot-cli
+    pkgs.elmPackages.elm
     pkgs.elmPackages.elm-format
+    pkgs.elmPackages.elm-language-server
     pkgs.elmPackages.elm-test
     pkgs.gh
     pkgs.git
@@ -30,23 +32,32 @@
     pkgs.gnome.nautilus
     pkgs.gnupg
     pkgs.gopass
+    pkgs.jq
     pkgs.killall
     pkgs.lxappearance
+    pkgs.minio-client
     pkgs.nerdfonts
     pkgs.nixfmt
+    pkgs.nodePackages.prettier
     pkgs.nodejs
     pkgs.nyxt
     pkgs.phodav
     pkgs.python3
     pkgs.ripgrep
     pkgs.spice-vdagent
+    pkgs.tree-sitter
     pkgs.wget
     pkgs.xclip
+    pkgs.feh
     (pkgs.writeShellScriptBin "xrandr-auto" ''
       xrandr --output Virtual-1 --auto
     '')
     (pkgs.writeShellScriptBin "xrandr-big-monitor" ''
       xrandr --output Virtual-1 --mode 5120x2160
+    '')
+
+    (pkgs.writeShellScriptBin "random-wallpaper" ''
+      ${pkgs.feh}/bin/feh --bg-fill --no-fehbg --randomize $HOME/backgrounds/
     '')
   ];
 
@@ -175,17 +186,28 @@
     vim-vinegar
     vim-visual-star-search
     which-key-nvim
+    nvim-lspconfig
+    nvim-treesitter
+    nvim-treesitter-parsers.elm
   ];
   programs.neovim.extraLuaConfig = builtins.readFile ./neovim.lua;
   programs.i3status-rust.enable = true;
   programs.i3status-rust.bars = {
     bottom = {
-      blocks = [{
-        block = "time";
-        interval = 60;
-        format = " $timestamp.datetime(f:'%a %d/%m %R') ";
-      }];
-      theme = "native";
+      blocks = [
+        {
+          block = "time";
+          interval = 60;
+          format = " $timestamp.datetime(f:'%a %d/%m %R') ";
+        }
+        {
+          block = "battery";
+          interval = 60;
+          format = " {icon} {percentage}% ";
+        }
+      ];
+      theme = "slick";
+      icons = "material-nf";
     };
   };
   xsession.enable = true;
@@ -198,7 +220,7 @@
     package = pkgs.i3-gaps;
     config = rec {
       defaultWorkspace = "workspace number 1";
-      gaps = { inner = 5; };
+      gaps = { inner = 10; };
       keybindings = lib.mkOptionDefault {
         "${config.xsession.windowManager.i3.config.modifier}+h" = "focus left";
         "${config.xsession.windowManager.i3.config.modifier}+j" = "focus down";
