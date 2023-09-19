@@ -4,6 +4,10 @@ vim.g.loaded_netrwPlugin = 1
 vim.g.mapleader = ' '
 vim.opt.swapfile = false
 vim.wo.number = true
+vim.cmd[[set tabstop=4]]
+vim.cmd[[set shiftwidth=4]]
+vim.cmd[[set expandtab]]
+
 local undodir = '~/.config/nvim/undo'
 if vim.fn.isdirectory(undodir) == 0 then
     vim.fn.mkdir(undodir, 'p')
@@ -13,6 +17,19 @@ vim.g.undodir = undodir
 vim.g.bookmark_sign = '🎗️'
 vim.g.bookmark_highlight_lines = true
 vim.g.bookmark_no_default_key_mappings = true
+
+require('telescope').setup {
+  extensions = {
+    fzf = {
+      fuzzy = true,                    -- false will only do exact matching
+      override_generic_sorter = true,  -- override the generic sorter
+      override_file_sorter = true,     -- override the file sorter
+      case_mode = "smart_case",        -- or "ignore_case" or "respect_case"
+                                       -- the default case_mode is "smart_case"
+    }
+  }
+}
+require('telescope').load_extension('fzf')
 
 require'nvim-treesitter.configs'.setup {
 	highligh = {

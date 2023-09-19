@@ -112,6 +112,8 @@
   programs.tmux.keyMode = "vi";
   programs.tmux.sensibleOnTop = true;
   programs.tmux.prefix = "C-b";
+  programs.tmux.shell = "${pkgs.zsh}/bin/zsh";
+  programs.tmux.mouse = true;
 
   programs.kitty = {
     enable = true;
@@ -163,6 +165,7 @@
     quickfix-reflector-vim
     tabular
     telescope-nvim
+    telescope-fzf-native-nvim
     toggleterm-nvim
     unicode-vim
     vim-abolish
@@ -193,20 +196,18 @@
   programs.neovim.extraLuaConfig = builtins.readFile ./neovim.lua;
   programs.i3status-rust.enable = true;
   programs.i3status-rust.bars = {
-    bottom = {
+    top = {
       blocks = [
+        { block = "disk_space"; }
+        { block = "cpu"; }
+        { block = "memory"; }
         {
           block = "time";
           interval = 60;
           format = " $timestamp.datetime(f:'%a %d/%m %R') ";
         }
-        {
-          block = "battery";
-          interval = 60;
-          format = " {icon} {percentage}% ";
-        }
       ];
-      theme = "slick";
+      theme = "modern";
       icons = "material-nf";
     };
   };
@@ -235,12 +236,14 @@
         "${config.xsession.windowManager.i3.config.modifier}+Shift+l" =
           "move right";
         "${config.xsession.windowManager.i3.config.modifier}+w" = "split h";
+        "${config.xsession.windowManager.i3.config.modifier}+Shift+r" =
+          "exec i3-input -F 'rename workspace to \"%s\"' -P 'New name: '";
       };
       terminal = "kitty";
       bars = [{
-        position = "bottom";
+        position = "top";
         statusCommand =
-          "${pkgs.i3status-rust}/bin/i3status-rs ~/.config/i3status-rust/config-bottom.toml";
+          "${pkgs.i3status-rust}/bin/i3status-rs ~/.config/i3status-rust/config-top.toml";
       }];
     };
   };
