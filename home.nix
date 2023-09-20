@@ -45,6 +45,7 @@
     pkgs.python3
     pkgs.ripgrep
     pkgs.spice-vdagent
+    pkgs.spice-webdav
     pkgs.tree-sitter
     pkgs.wget
     pkgs.xclip
@@ -214,7 +215,8 @@
   xsession.enable = true;
   xsession.scriptPath = ".hm-xsession";
   xsession.initExtra = ''
-    spice-vdagent
+    spice-vdagent;
+    spice-webdav;
   '';
   xsession.windowManager.i3 = {
     enable = true;
