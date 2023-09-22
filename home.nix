@@ -30,6 +30,7 @@
     pkgs.git
     pkgs.git-extras
     pkgs.gnome.nautilus
+    pkgs.pcmanfm
     pkgs.gnupg
     pkgs.gopass
     pkgs.jq
@@ -45,7 +46,6 @@
     pkgs.python3
     pkgs.ripgrep
     pkgs.spice-vdagent
-    pkgs.spice-webdav
     pkgs.tree-sitter
     pkgs.wget
     pkgs.xclip
@@ -59,6 +59,14 @@
 
     (pkgs.writeShellScriptBin "random-wallpaper" ''
       ${pkgs.feh}/bin/feh --bg-fill --no-fehbg --randomize $HOME/backgrounds/
+    '')
+
+    (pkgs.writeShellScriptBin "ctrl-c" ''
+      ${pkgs.xclip}/bin/xclip -selection clipboard
+    '')
+
+    (pkgs.writeShellScriptBin "ctrl-v" ''
+      ${pkgs.xclip}/bin/xclip -selection clipboard -o
     '')
   ];
 
@@ -103,6 +111,7 @@
   programs.zsh.shellAliases = {
     g = "lazygit";
     v = "nvim";
+    t = "tmuxinator";
   };
   programs.zsh.oh-my-zsh.enable = true;
   programs.zsh.oh-my-zsh.plugins =
@@ -141,7 +150,7 @@
   programs.neovim.plugins = with pkgs.vimPlugins; [
     ale
     bufferline-nvim
-    comment-nvim
+    mini-nvim
     copilot-lua
     dashboard-nvim
     dhall-vim
@@ -216,7 +225,7 @@
   xsession.scriptPath = ".hm-xsession";
   xsession.initExtra = ''
     spice-vdagent;
-    spice-webdav;
+    spice-webdavd;
   '';
   xsession.windowManager.i3 = {
     enable = true;
@@ -224,6 +233,7 @@
     config = rec {
       defaultWorkspace = "workspace number 1";
       gaps = { inner = 10; };
+      fonts = [ "FiraCode Nerd 10" ];
       keybindings = lib.mkOptionDefault {
         "${config.xsession.windowManager.i3.config.modifier}+h" = "focus left";
         "${config.xsession.windowManager.i3.config.modifier}+j" = "focus down";
@@ -244,11 +254,13 @@
       terminal = "kitty";
       bars = [{
         position = "top";
+        fonts = [ "FiraCode Nerd 10" ];
         statusCommand =
           "${pkgs.i3status-rust}/bin/i3status-rs ~/.config/i3status-rust/config-top.toml";
       }];
     };
   };
+  services.polybar.enable = true;
   services.random-background.enable = true;
   services.random-background.imageDirectory = "%h/backgrounds/";
   services.random-background.enableXinerama = true;

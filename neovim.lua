@@ -2,6 +2,8 @@
 vim.g.loaded = 1
 vim.g.loaded_netrwPlugin = 1
 vim.g.mapleader = ' '
+vim.g.vim_markdown_folding_disabled = 1
+
 vim.opt.swapfile = false
 vim.wo.number = true
 vim.cmd[[set tabstop=4]]
@@ -17,6 +19,32 @@ vim.g.undodir = undodir
 vim.g.bookmark_sign = '🎗️'
 vim.g.bookmark_highlight_lines = true
 vim.g.bookmark_no_default_key_mappings = true
+
+vim.cmd[[
+xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
+function! ExecuteMacroOverVisualRange()
+  echo "@".getcmdline()
+  execute ":'<,'>normal @".nr2char(getchar())
+endfunction
+]]
+
+require('mini.comment').setup()
+require('mini.misc').setup()
+require('mini.basics').setup()
+require('mini.indentscope').setup()
+require('mini.move').setup({
+    mappings = {
+        -- Move visual selection in Visual mode. Defaults are Alt (Meta) + hjkl.
+        left = '<C-h>',
+        right = '<C-l>',
+        down = '<C-j>',
+        up = '<C-k>',
+    }
+})
+require('mini.starter').setup()
+require('mini.map').setup()
+MiniMap.open()
+require('mini.animate').setup()
 
 require('telescope').setup {
   extensions = {
