@@ -99,7 +99,7 @@
   home.sessionVariables = {
     EDITOR = "nvim";
     TERM = "kitty";
-    SHELL = "zsh";
+    SHELL = "${pkgs.zsh}/bin/zsh";
 
   };
 
