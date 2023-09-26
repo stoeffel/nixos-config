@@ -55,12 +55,14 @@
   # services.xserver.xkbOptions = "eurosign:e,caps:escape";
   services.qemuGuest.enable = true;
   services.spice-vdagentd.enable = true;
+  services.spice-webdavd.enable = true;
   services.xserver = {
     dpi = 220;
     desktopManager.xterm.enable = false;
     displayManager.defaultSession = "none+i3";
     displayManager.sessionCommands = ''
       spice-vdagent;
+      spice-webdavd;
       xrandr --output Virtual-1 --mode 3840x2160;
       '';
     displayManager.lightdm = {
@@ -108,16 +110,18 @@
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
+  services.pcscd.enable = true;
+  programs.gnupg.agent = {
+     enable = true;
+     pinentryFlavor = "curses";
+     enableSSHSupport = true;
+  };
 
   # List services that you want to enable:
 
   # Enable the OpenSSH daemon.
   # services.openssh.enable = true;
-  programs.ssh.startAgent = true;
+  programs.ssh.startAgent = false;
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ 8080  8382];

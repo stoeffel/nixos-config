@@ -20,6 +20,7 @@
   nixpkgs.config.allowUnfree = true;
   home.packages = [
     pkgs.arandr
+    pkgs.pinentry
     pkgs.autojump
     pkgs.copilot-cli
     pkgs.elmPackages.elm
@@ -206,7 +207,7 @@
   programs.neovim.extraLuaConfig = builtins.readFile ./neovim.lua;
   programs.i3status-rust.enable = true;
   programs.i3status-rust.bars = {
-    top = {
+    bottom = {
       blocks = [
         { block = "disk_space"; }
         { block = "cpu"; }
@@ -248,19 +249,22 @@
         "${config.xsession.windowManager.i3.config.modifier}+Shift+l" =
           "move right";
         "${config.xsession.windowManager.i3.config.modifier}+w" = "split h";
-        "${config.xsession.windowManager.i3.config.modifier}+Shift+r" =
+        "${config.xsession.windowManager.i3.config.modifier}+t" =
+          "focus mode_toggle";
+        "${config.xsession.windowManager.i3.config.modifier}+space" =
+          "exec ${config.xsession.windowManager.i3.config.menu}";
+        "${config.xsession.windowManager.i3.config.modifier}+n" =
           "exec i3-input -F 'rename workspace to \"%s\"' -P 'New name: '";
       };
       terminal = "kitty";
       bars = [{
-        position = "top";
+        position = "bottom";
         fonts = [ "FiraCode Nerd 10" ];
         statusCommand =
-          "${pkgs.i3status-rust}/bin/i3status-rs ~/.config/i3status-rust/config-top.toml";
+          "${pkgs.i3status-rust}/bin/i3status-rs ~/.config/i3status-rust/config-bottom.toml";
       }];
     };
   };
-  services.polybar.enable = true;
   services.random-background.enable = true;
   services.random-background.imageDirectory = "%h/backgrounds/";
   services.random-background.enableXinerama = true;

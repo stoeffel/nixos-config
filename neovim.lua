@@ -9,6 +9,8 @@ vim.wo.number = true
 vim.cmd[[set tabstop=4]]
 vim.cmd[[set shiftwidth=4]]
 vim.cmd[[set expandtab]]
+vim.cmd[[let &showbreak = '↪ ']]
+vim.cmd[[set wrap]]
 
 local undodir = '~/.config/nvim/undo'
 if vim.fn.isdirectory(undodir) == 0 then
@@ -44,7 +46,6 @@ require('mini.move').setup({
 require('mini.starter').setup()
 require('mini.map').setup()
 MiniMap.open()
-require('mini.animate').setup()
 
 require('telescope').setup {
   extensions = {
