@@ -21,6 +21,9 @@
   home.packages = [
     pkgs.arandr
     pkgs.exa
+    (pkgs.writeShellScriptBin "e" ''
+      ${pkgs.exa}/bin/exa --long --git --icons --sort=Name --header $@
+    '')
     pkgs.nnn
     pkgs.pinentry
     pkgs.autojump
@@ -172,6 +175,7 @@
   programs.lazygit.enable = true;
   programs.helix.enable = true;
   programs.helix.settings.theme = "everforest_dark";
+  programs.helix.settings.editor.shell = ["${pkgs.zsh}/bin/zsh" "-c"];
   programs.helix.settings.editor.color-modes = true;
   programs.helix.settings.keys.insert = { C-c = "normal_mode"; };
   programs.helix.settings.editor.statusline = {
