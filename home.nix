@@ -20,15 +20,21 @@
   nixpkgs.config.allowUnfree = true;
   home.packages = [
     pkgs.arandr
+    pkgs.exa
+    pkgs.nnn
     pkgs.pinentry
     pkgs.autojump
     pkgs.copilot-cli
     pkgs.elmPackages.elm
     pkgs.elmPackages.elm-format
+    pkgs.elmPackages.elm-json
     pkgs.elmPackages.elm-language-server
     pkgs.elmPackages.elm-test
+    pkgs.elmPackages.lamdera
+    pkgs.imagemagick
     pkgs.gh
     pkgs.git
+    pkgs.git-crypt
     pkgs.git-extras
     pkgs.gnome.nautilus
     pkgs.pcmanfm
@@ -41,6 +47,7 @@
     pkgs.nerdfonts
     pkgs.nixfmt
     pkgs.nodePackages.prettier
+    pkgs.nodePackages.vega-cli
     pkgs.nodejs
     pkgs.nyxt
     pkgs.phodav
@@ -48,6 +55,7 @@
     pkgs.ripgrep
     pkgs.spice-vdagent
     pkgs.tree-sitter
+    pkgs.tree-sitter-grammars.tree-sitter-elm
     pkgs.wget
     pkgs.xclip
     pkgs.feh
@@ -100,7 +108,7 @@
     EDITOR = "nvim";
     TERM = "kitty";
     SHELL = "${pkgs.zsh}/bin/zsh";
-
+    NNN_PLUG = "o:xdg-open;d:diffs;p:preview-tui";
   };
 
   # Let Home Manager install and manage itself.
@@ -109,11 +117,16 @@
   programs.ssh.enable = true;
 
   programs.zsh.enable = true;
+  programs.zsh.sessionVariables = {
+    SHELL = "${pkgs.zsh}/bin/zsh";
+    EDITOR = "${pkgs.neovim}/bin/nvim";
+  };
   programs.zsh.shellAliases = {
     g = "lazygit";
     v = "nvim";
     t = "tmuxinator";
   };
+
   programs.zsh.oh-my-zsh.enable = true;
   programs.zsh.oh-my-zsh.plugins =
     [ "git" "pip" "autojump" "command-not-found" "fasd" "history" "fzf" ];
@@ -126,9 +139,21 @@
   programs.tmux.shell = "${pkgs.zsh}/bin/zsh";
   programs.tmux.mouse = true;
 
+  programs.wezterm.enable = true;
+  programs.wezterm.extraConfig = ''
+    local wezterm = require 'wezterm';
+    return {
+    font = wezterm.font("FiraCode Nerd Font Mono");
+    font_size = 20.0;
+    color_scheme = "tokyonight_storm";
+              hide_tab_bar_if_only_one_tab = true,
+          default_prog = { "zsh", "--login"},
+
+    }
+  '';
   programs.kitty = {
     enable = true;
-    theme = "Tokyo Night Day";
+    theme = "Everforest Dark Medium";
     font = {
       name = "FiraCode Nerd Font Mono";
       size = 22;
@@ -145,6 +170,59 @@
   programs.git.userName = "Stoeffel";
   programs.git.userEmail = "schtoeffel@gmail.com";
   programs.lazygit.enable = true;
+  programs.helix.enable = true;
+  programs.helix.settings.theme = "everforest_dark";
+  programs.helix.settings.editor.color-modes = true;
+  programs.helix.settings.keys.insert = { C-c = "normal_mode"; };
+  programs.helix.settings.editor.statusline = {
+    left = [ "mode" "spinner" ];
+    center = [ "file-name" ];
+    right = [
+      "diagnostics"
+      "selections"
+      "position"
+      "file-encoding"
+      "file-line-ending"
+      "file-type"
+    ];
+    separator = "│";
+    mode.normal = "NORMAL";
+    mode.insert = "INSERT";
+    mode.select = "SELECT";
+  };
+  programs.helix.languages = {
+    language = [
+      {
+        name = "elm";
+        scope = "source.elm";
+        injection-regex = "^elm$";
+        file-types = [ "elm" ];
+        roots = [ "elm.json" ];
+        comment-token = "--";
+        language-server = {
+          command =
+            "${pkgs.elmPackages.elm-language-server}/bin/elm-language-server";
+          args = [ "--stdio" ];
+        };
+        formatter = {
+          command = "elm-format";
+          args = [ "--stdin" ];
+        };
+      }
+
+      {
+        name = "nix";
+        scope = "source.nix";
+        injection-regex = "^nix$";
+        file-types = [ "nix" ];
+        comment-token = "--";
+        formatter = {
+          command = "nixfmt";
+          args = [ ];
+        };
+      }
+    ];
+  };
   programs.neovim.enable = true;
   programs.neovim.viAlias = true;
   programs.neovim.vimAlias = true;
@@ -232,6 +310,7 @@
     enable = true;
     package = pkgs.i3-gaps;
     config = rec {
+      modifier = "Mod4";
       defaultWorkspace = "workspace number 1";
       gaps = { inner = 10; };
       fonts = [ "FiraCode Nerd 10" ];
@@ -257,6 +336,10 @@
           "exec i3-input -F 'rename workspace to \"%s\"' -P 'New name: '";
       };
       terminal = "kitty";
+      window = {
+        titlebar = false;
+        border = 0;
+      };
       bars = [{
         position = "bottom";
         fonts = [ "FiraCode Nerd 10" ];
@@ -272,5 +355,4 @@
   home.activation.createGitignore = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     cp -f ${./gitignore} $HOME/.config/git/ignore
   '';
-
 }

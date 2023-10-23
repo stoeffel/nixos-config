@@ -44,8 +44,6 @@ require('mini.move').setup({
     }
 })
 require('mini.starter').setup()
-require('mini.map').setup()
-MiniMap.open()
 
 require('telescope').setup {
   extensions = {
@@ -73,7 +71,7 @@ require'nvim-treesitter.configs'.setup {
 }
 local lspconfig = require('lspconfig')
 lspconfig.elmls.setup {}
-vim.cmd('colorscheme tokyonight-day')
+vim.cmd('colorscheme tokyonight-moon')
 vim.cmd [[
 augroup fmt
   autocmd!

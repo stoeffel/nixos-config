@@ -4,6 +4,21 @@
 
 { config, pkgs, lib,  ... }:
 
+let
+  dual-function-keys = pkgs.writeText "dual-function-keys.yaml" ''
+    # https://github.com/torvalds/linux/blob/master/include/uapi/linux/input-event-codes.h
+    TIMING:
+      TAP_MILLISEC: 200
+      DOUBLE_TAP_MILLISEC: 150
+
+    MAPPINGS:
+      - KEY: KEY_LEFTALT
+        TAP: KEY_ESC
+        HOLD: KEY_LEFTALT
+        HOLD_START: BEFORE_CONSUME
+  '';
+in
+
 {
   imports =
     [ # Include the results of the hardware scan.
@@ -105,18 +120,33 @@
   environment.systemPackages = with pkgs; [
      vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
      wget
+     yubikey-manager
+     yubikey-personalization
+     zsh
   ];
+  environment.shellInit = ''
+    gpg-connect-agent /bye
+    export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+  '';
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
   services.pcscd.enable = true;
+  services.udev.packages = with pkgs; [ yubikey-personalization ];
   programs.gnupg.agent = {
      enable = true;
-     pinentryFlavor = "curses";
      enableSSHSupport = true;
   };
-
+  services.interception-tools = with pkgs; {
+      enable = true;
+      plugins = [ interception-tools-plugins.dual-function-keys ];
+      udevmonConfig = ''
+        - JOB: "${interception-tools}/bin/intercept -g $DEVNODE | ${interception-tools-plugins.dual-function-keys}/bin/dual-function-keys -c ${dual-function-keys} | ${interception-tools}/bin/uinput -d $DEVNODE"
+          DEVICE:
+            LINK: .*-event-kbd
+      '';
+    };
   # List services that you want to enable:
 
   # Enable the OpenSSH daemon.
