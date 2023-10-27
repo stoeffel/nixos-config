@@ -25,6 +25,9 @@
       ${pkgs.exa}/bin/exa --long --git --icons --sort=Name --header $@
     '')
     pkgs.nnn
+    pkgs.haskellPackages.fourmolu
+    pkgs.haskellPackages.haskell-language-server
+    pkgs.haskellPackages.tree-sitter-haskell
     pkgs.pinentry
     pkgs.autojump
     pkgs.copilot-cli
@@ -156,7 +159,7 @@
   '';
   programs.kitty = {
     enable = true;
-    theme = "Everforest Dark Medium";
+    theme = "Tokyo Night";
     font = {
       name = "FiraCode Nerd Font Mono";
       size = 22;
@@ -174,10 +177,17 @@
   programs.git.userEmail = "schtoeffel@gmail.com";
   programs.lazygit.enable = true;
   programs.helix.enable = true;
-  programs.helix.settings.theme = "everforest_dark";
-  programs.helix.settings.editor.shell = ["${pkgs.zsh}/bin/zsh" "-c"];
+  programs.helix.settings.theme = "kanagawa";
+  programs.helix.settings.editor.true-color = true;
+  programs.helix.settings.editor.shell = [ "${pkgs.zsh}/bin/zsh" "-c" ];
   programs.helix.settings.editor.color-modes = true;
+  programs.helix.settings.editor.auto-format = true;
   programs.helix.settings.keys.insert = { C-c = "normal_mode"; };
+  programs.helix.settings.editor.soft-wrap.enable = true;
+  programs.helix.settings.editor.indent-guides = {
+    render = true;
+    skip-levels = 2;
+  };
   programs.helix.settings.editor.statusline = {
     left = [ "mode" "spinner" ];
     center = [ "file-name" ];
@@ -200,6 +210,7 @@
         name = "elm";
         scope = "source.elm";
         injection-regex = "^elm$";
+        auto-format = true;
         file-types = [ "elm" ];
         roots = [ "elm.json" ];
         comment-token = "--";
@@ -217,12 +228,32 @@
       {
         name = "nix";
         scope = "source.nix";
+        auto-format = true;
         injection-regex = "^nix$";
         file-types = [ "nix" ];
         comment-token = "--";
         formatter = {
           command = "nixfmt";
           args = [ ];
+        };
+      }
+
+      {
+        name = "haskell";
+        scope = "source.haskell";
+        auto-format = true;
+        injection-regex = "haskell";
+        file-types = [ "hs" "hs-boot" ];
+        roots = [ "Setup.hs" "stack.yaml" "cabal.project" "Shakefile.hs" ];
+        comment-token = "--";
+        language-server = {
+          command =
+            "${pkgs.haskellPackages.haskell-language-server}/bin/haskell-language-server-wrapper";
+          args = [ "--lsp" ];
+        };
+        formatter = {
+          command = "fourmolu";
+          args = [ "--stdin-input-file" "--mode inplace" ];
         };
       }
     ];
@@ -287,6 +318,23 @@
     nvim-treesitter-parsers.elm
   ];
   programs.neovim.extraLuaConfig = builtins.readFile ./neovim.lua;
+  programs.zellij.enable = true;
+  programs.zellij.settings.theme = "default";
+  programs.zellij.settings.themes = {
+    default = {
+      fg = [ 220 215 186 ]; # RGB value for foreground
+      bg = [ 31 31 40 ]; # RGB value for background
+      red = [ 195 64 67 ]; # RGB value for red
+      green = [ 118 148 106 ]; # RGB value for green
+      yellow = [ 255 158 59 ]; # RGB value for yellow
+      blue = [ 126 156 216 ]; # RGB value for blue
+      magenta = [ 149 127 184 ]; # RGB value for magenta
+      orange = [ 255 160 102 ]; # RGB value for orange
+      cyan = [ 127 180 202 ]; # RGB value for cyan
+      black = [ 22 22 29 ]; # RGB value for black
+      white = [ 220 215 186 ]; # RGB value for white
+    };
+  };
   programs.i3status-rust.enable = true;
   programs.i3status-rust.bars = {
     bottom = {
@@ -338,6 +386,7 @@
           "exec ${config.xsession.windowManager.i3.config.menu}";
         "${config.xsession.windowManager.i3.config.modifier}+n" =
           "exec i3-input -F 'rename workspace to \"%s\"' -P 'New name: '";
+        "${config.xsession.windowManager.i3.config.modifier}+x" = "kill";
       };
       terminal = "kitty";
       window = {
@@ -359,4 +408,5 @@
   home.activation.createGitignore = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     cp -f ${./gitignore} $HOME/.config/git/ignore
   '';
+
 }
