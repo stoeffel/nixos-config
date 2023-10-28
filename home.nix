@@ -1,6 +1,10 @@
 { config, pkgs, lib, ... }:
 
-{
+let
+  unstableTarball = fetchTarball
+    "https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz";
+  unstable = import unstableTarball { config = config.nixpkgs.config; };
+in {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
   home.username = "stoeffel";
@@ -24,12 +28,42 @@
     (pkgs.writeShellScriptBin "e" ''
       ${pkgs.exa}/bin/exa --long --git --icons --sort=Name --header $@
     '')
-    pkgs.nnn
+    (pkgs.writeShellScriptBin "x" ''
+      # Function to search for .elm directory or file in parent directories
+      find_elm_dir() {
+          local dir="$1"
+          while [ "$dir" != "/" ]; do
+              if [ -d "$dir/.elm" ]; then
+                  echo "$dir/.elm"
+                  return 0
+              elif [ -d "$dir/frontend/.elm" ]; then
+                  echo "$dir/frontend/.elm"
+                  return 0
+              fi
+              dir=$(dirname "$dir")
+          done
+          return 1
+      }
+
+      # Search for .elm in parent directories
+      elm_dir=$(find_elm_dir "$(pwd)")
+
+      if [ -n "$elm_dir" ]; then
+          ELM_HOME="$elm_dir"
+          export ELM_HOME
+          echo "ELM_HOME set to $ELM_HOME"
+          # Run hx with all arguments passed to this script
+          ${pkgs.helix}/bin/hx "$@"
+      else
+          ${pkgs.helix}/bin/hx "$@"
+      fi
+    '')
+    unstable.yazi
+    pkgs.bat
     pkgs.haskellPackages.fourmolu
     pkgs.haskellPackages.haskell-language-server
     pkgs.haskellPackages.tree-sitter-haskell
     pkgs.pinentry
-    pkgs.autojump
     pkgs.copilot-cli
     pkgs.elmPackages.elm
     pkgs.elmPackages.elm-format
@@ -111,7 +145,7 @@
   #
   # if you don't want to manage your shell through Home Manager.
   home.sessionVariables = {
-    EDITOR = "nvim";
+    EDITOR = "x";
     TERM = "kitty";
     SHELL = "${pkgs.zsh}/bin/zsh";
     NNN_PLUG = "o:xdg-open;d:diffs;p:preview-tui";
@@ -119,13 +153,14 @@
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
+  programs.zoxide.enable = true;
   programs.chromium.enable = true;
   programs.ssh.enable = true;
 
   programs.zsh.enable = true;
   programs.zsh.sessionVariables = {
     SHELL = "${pkgs.zsh}/bin/zsh";
-    EDITOR = "${pkgs.neovim}/bin/nvim";
+    EDITOR = "x";
   };
   programs.zsh.shellAliases = {
     g = "lazygit";
@@ -159,7 +194,7 @@
   '';
   programs.kitty = {
     enable = true;
-    theme = "Tokyo Night";
+    theme = "Catppuccin-Macchiato";
     font = {
       name = "FiraCode Nerd Font Mono";
       size = 22;
@@ -177,7 +212,7 @@
   programs.git.userEmail = "schtoeffel@gmail.com";
   programs.lazygit.enable = true;
   programs.helix.enable = true;
-  programs.helix.settings.theme = "kanagawa";
+  programs.helix.settings.theme = "catppuccin_macchiato";
   programs.helix.settings.editor.true-color = true;
   programs.helix.settings.editor.shell = [ "${pkgs.zsh}/bin/zsh" "-c" ];
   programs.helix.settings.editor.color-modes = true;
@@ -321,18 +356,31 @@
   programs.zellij.enable = true;
   programs.zellij.settings.theme = "default";
   programs.zellij.settings.themes = {
-    default = {
-      fg = [ 220 215 186 ]; # RGB value for foreground
-      bg = [ 31 31 40 ]; # RGB value for background
-      red = [ 195 64 67 ]; # RGB value for red
-      green = [ 118 148 106 ]; # RGB value for green
-      yellow = [ 255 158 59 ]; # RGB value for yellow
-      blue = [ 126 156 216 ]; # RGB value for blue
-      magenta = [ 149 127 184 ]; # RGB value for magenta
-      orange = [ 255 160 102 ]; # RGB value for orange
-      cyan = [ 127 180 202 ]; # RGB value for cyan
-      black = [ 22 22 29 ]; # RGB value for black
-      white = [ 220 215 186 ]; # RGB value for white
+    catppucin-latte-default = { # catppuccin-latte
+      bg = [ 172 176 190 ];
+      fg = [ 172 176 190 ];
+      red = [ 210 15 57 ];
+      green = [ 64 160 43 ];
+      blue = [ 30 102 245 ];
+      yellow = [ 223 142 29 ];
+      magenta = [ 234 118 203 ];
+      orange = [ 254 100 11 ];
+      cyan = [ 4 165 229 ];
+      black = [ 220 224 232 ];
+      white = [ 76 79 105 ];
+    };
+    default = { # catppuccin-macchiato
+      bg = [ 91 96 120 ];
+      fg = [ 202 211 245 ];
+      red = [ 237 135 150 ];
+      green = [ 166 218 149 ];
+      blue = [ 138 173 244 ];
+      yellow = [ 238 212 159 ];
+      magenta = [ 245 189 230 ];
+      orange = [ 245 169 127 ];
+      cyan = [ 145 215 227 ];
+      black = [ 30 32 48 ];
+      white = [ 202 211 245 ];
     };
   };
   programs.i3status-rust.enable = true;
