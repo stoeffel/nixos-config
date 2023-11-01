@@ -28,7 +28,16 @@ in {
     (pkgs.writeShellScriptBin "e" ''
       ${pkgs.exa}/bin/exa --long --git --icons --sort=Name --header $@
     '')
-    (pkgs.writeShellScriptBin "x" ''
+    (pkgs.writeShellScriptBin "fzf-lazygit" ''
+      { cat <<EOF
+      status
+      branch
+      log
+      stash
+      EOF
+      } | fzf --header 'ctrl-c to show full UI' | xargs lazygit
+    '')
+    (pkgs.writeShellScriptBin "v" ''
       # Function to search for .elm directory or file in parent directories
       find_elm_dir() {
           local dir="$1"
@@ -52,16 +61,17 @@ in {
           ELM_HOME="$elm_dir"
           export ELM_HOME
           echo "ELM_HOME set to $ELM_HOME"
-          # Run hx with all arguments passed to this script
-          ${pkgs.helix}/bin/hx "$@"
+          # Run nvim with all arguments passed to this script
+          nvim "$@"
       else
-          ${pkgs.helix}/bin/hx "$@"
+          nvim "$@"
       fi
     '')
     unstable.yazi
     pkgs.bat
     pkgs.haskellPackages.fourmolu
     pkgs.haskellPackages.haskell-language-server
+    pkgs.nodePackages.typescript-language-server
     pkgs.haskellPackages.tree-sitter-haskell
     pkgs.pinentry
     pkgs.copilot-cli
@@ -145,7 +155,7 @@ in {
   #
   # if you don't want to manage your shell through Home Manager.
   home.sessionVariables = {
-    EDITOR = "x";
+    EDITOR = "nvim";
     TERM = "kitty";
     SHELL = "${pkgs.zsh}/bin/zsh";
     NNN_PLUG = "o:xdg-open;d:diffs;p:preview-tui";
@@ -160,11 +170,10 @@ in {
   programs.zsh.enable = true;
   programs.zsh.sessionVariables = {
     SHELL = "${pkgs.zsh}/bin/zsh";
-    EDITOR = "x";
+    EDITOR = "nvim";
   };
   programs.zsh.shellAliases = {
     g = "lazygit";
-    v = "nvim";
     t = "tmuxinator";
   };
 
@@ -297,8 +306,10 @@ in {
   programs.neovim.viAlias = true;
   programs.neovim.vimAlias = true;
   programs.neovim.plugins = with pkgs.vimPlugins; [
+    nvim-osc52
     ale
     bufferline-nvim
+    catppuccin-nvim
     mini-nvim
     copilot-lua
     dashboard-nvim

@@ -11,6 +11,7 @@ vim.cmd[[set shiftwidth=4]]
 vim.cmd[[set expandtab]]
 vim.cmd[[let &showbreak = '↪ ']]
 vim.cmd[[set wrap]]
+vim.cmd[[set clipboard=unnamedplus]]
 
 local undodir = '~/.config/nvim/undo'
 if vim.fn.isdirectory(undodir) == 0 then
@@ -30,6 +31,19 @@ function! ExecuteMacroOverVisualRange()
 endfunction
 ]]
 
+local function copy(lines, _)
+  require('osc52').copy(table.concat(lines, '\n'))
+end
+
+local function paste()
+  return {vim.fn.split(vim.fn.getreg(''), '\n'), vim.fn.getregtype('')}
+end
+
+vim.g.clipboard = {
+  name = 'osc52',
+  copy = {['+'] = copy, ['*'] = copy},
+  paste = {['+'] = paste, ['*'] = paste},
+}
 require('mini.comment').setup()
 require('mini.misc').setup()
 require('mini.basics').setup()
@@ -71,7 +85,7 @@ require'nvim-treesitter.configs'.setup {
 }
 local lspconfig = require('lspconfig')
 lspconfig.elmls.setup {}
-vim.cmd('colorscheme tokyonight-moon')
+vim.cmd('colorscheme catppuccin-macchiato')
 vim.cmd [[
 augroup fmt
   autocmd!
@@ -123,7 +137,7 @@ require('gitsigns').setup{
 require('nvim-web-devicons').setup{}
 require('lualine').setup {
   options = {
-    theme = 'tokyonight'
+    theme = 'catppuccin'
   }
 }
 require("bufferline").setup{}
