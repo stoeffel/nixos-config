@@ -1,0 +1,81 @@
+layout {
+   default_tab_template {
+        pane size=1 borderless=true {
+            plugin location="zellij:tab-bar"
+        }
+        children
+        pane size=2 borderless=true {
+            plugin location="zellij:status-bar"
+        }
+    }
+   tab focus=true name="diviapps" {
+        pane split_direction="vertical" {
+            pane stacked=true {
+                pane name="room_service" {
+                    command "./dev"
+                    args "--command" "cargo" "run" "--" "--address=0.0.0.0:8888"
+                    cwd "./room_service"
+                }
+
+                pane name="room_service-test" {
+                    command "./dev"
+                    args "--command" "cargo" "test"
+                    cwd "./room_service"
+                }
+
+                pane name="backend-test" {
+                    command "./dev"
+                    args "--command" "./bin/test" "~testQuick" "*"
+                    cwd "./backend"
+                }
+
+                pane name="backend-server" {
+                    command "./dev"
+                    args "--command" "env" "DIVIDAT_BACKEND_HTTP_ADDRESS=0.0.0.0" "./bin/dev-server"
+                    cwd "./backend"
+                }
+
+                pane name="frontend-test" {
+                    command "./dev"
+                    args "--command" "./bin/test" "--watch"
+                    cwd "./frontend"
+                }
+
+                pane name="frontend-server"  {
+                    command "./dev"
+                    args "--command" "env" "ELM_DEBUGGER=1" "ROOMS_URL=ws:///0.0.0.0:8888/" "BINDALL=1" "./bin/dev-server"
+                    cwd "./frontend"
+                }
+            }
+            pane name="editor" size="70%" focus=true {
+                command "v"
+            }
+        }
+    }
+    tab name="terminal" {
+        pane
+        pane command="yazi" size="40%"
+    }
+    tab name="driver" cwd="../driver" {
+        pane command="v" size="70%"
+        pane split_direction="vertical" {
+            pane {
+                command "nix-shell"
+                args "--run" "make && ./bin/dividat-driver"
+                size "50%"
+            }
+            pane command="nix-shell" size="50%"
+        }
+    }
+}
+keybinds {
+    shared {
+        bind "Ctrl k" {
+          Run "zellij" "run" "--floating" "--close-on-exit" "--" "fzf-lazygit" {
+            width "80%"
+            height "80%"
+            close_on_exit true
+          }
+        }
+    }
+}

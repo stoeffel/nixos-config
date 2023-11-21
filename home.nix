@@ -23,6 +23,7 @@ in {
   # environment.
   nixpkgs.config.allowUnfree = true;
   home.packages = [
+    pkgs.ncdu
     pkgs.arandr
     pkgs.scalafmt
     pkgs.exa
