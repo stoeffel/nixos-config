@@ -92,6 +92,7 @@ augroup fmt
   autocmd BufWritePre * Neoformat
 augroup END
 ]]
+vim.cmd("let g:neoformat_enabled_scala = ['scalafmt']")
 require('gitsigns').setup{
   on_attach = function(bufnr)
     local gs = package.loaded.gitsigns

@@ -4,20 +4,20 @@
 
 { config, pkgs, lib,  ... }:
 
-let
-  dual-function-keys = pkgs.writeText "dual-function-keys.yaml" ''
+# let
+  # dual-function-keys = pkgs.writeText "dual-function-keys.yaml" ''
     # https://github.com/torvalds/linux/blob/master/include/uapi/linux/input-event-codes.h
-    TIMING:
-      TAP_MILLISEC: 200
-      DOUBLE_TAP_MILLISEC: 150
-
-    MAPPINGS:
-      - KEY: KEY_LEFTALT
-        TAP: KEY_ESC
-        HOLD: KEY_LEFTALT
-        HOLD_START: BEFORE_CONSUME
-  '';
-in
+    # TIMING:
+      # TAP_MILLISEC: 200
+      # DOUBLE_TAP_MILLISEC: 150
+# 
+    # MAPPINGS:
+      # - KEY: KEY_LEFTALT
+        # TAP: KEY_ESC
+        # # HOLD: KEY_LEFTALT
+        # HOLD_START: BEFORE_CONSUME
+  # '';
+# in
 
 {
   imports =
@@ -138,26 +138,27 @@ in
      enable = true;
      enableSSHSupport = true;
   };
-  services.interception-tools = with pkgs; {
-      enable = true;
-      plugins = [ interception-tools-plugins.dual-function-keys ];
-      udevmonConfig = ''
-        - JOB: "${interception-tools}/bin/intercept -g $DEVNODE | ${interception-tools-plugins.dual-function-keys}/bin/dual-function-keys -c ${dual-function-keys} | ${interception-tools}/bin/uinput -d $DEVNODE"
-          DEVICE:
-            LINK: .*-event-kbd
-      '';
-    };
+  # services.interception-tools = with pkgs; {
+      # enable = true;
+      # plugins = [ interception-tools-plugins.dual-function-keys ];
+      # udevmonConfig = ''
+        # - JOB: "${interception-tools}/bin/intercept -g $DEVNODE | ${interception-tools-plugins.dual-function-keys}/bin/dual-function-keys -c ${dual-function-keys} | ${interception-tools}/bin/uinput -d $DEVNODE"
+          # DEVICE:
+            # LINK: .*-event-kbd
+      # '';
+    # };
   # List services that you want to enable:
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
+  services.openssh.forwardX11 = true;
   programs.ssh.startAgent = false;
 
   # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ 8080  8382];
+  networking.firewall.enable = false;
+  networking.firewall.allowedTCPPorts = [ 8080  9000 ];
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
-  networking.firewall.enable = false;
 
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you

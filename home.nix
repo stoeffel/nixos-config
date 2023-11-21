@@ -24,6 +24,7 @@ in {
   nixpkgs.config.allowUnfree = true;
   home.packages = [
     pkgs.arandr
+    pkgs.scalafmt
     pkgs.exa
     (pkgs.writeShellScriptBin "e" ''
       ${pkgs.exa}/bin/exa --long --git --icons --sort=Name --header $@
